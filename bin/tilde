@@ -1,5 +1,5 @@
-#!/usr/bin/env node
+#!/usr/bin/env -S node --enable-source-maps
 
-import {execute} from "../dist/index.js"
+import { execute } from "../out/index.js";
 
-await execute()
+await execute();

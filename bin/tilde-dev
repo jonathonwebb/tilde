@@ -1,5 +1,0 @@
-#!/usr/bin/env -S pnpm tsx
-
-import {execute} from "../src/index.js"
-
-await execute()

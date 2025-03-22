@@ -1,0 +1,19 @@
+#!/usr/bin/env node
+
+import fs from "node:fs/promises";
+import esbuild from "esbuild";
+
+const entryPoints = ["src/**/*"];
+const outdir = "out";
+
+await fs.rm(outdir, { recursive: true, force: true });
+
+await esbuild.build({
+	entryPoints,
+	outdir,
+	platform: "node",
+	format: "esm",
+	bundle: false,
+	sourcemap: true,
+	logLevel: "info",
+});
