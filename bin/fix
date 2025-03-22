@@ -1,0 +1,4 @@
+#!/bin/sh
+
+echo "biome check --fix ."
+./node_modules/.bin/biome check --fix .

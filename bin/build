@@ -1,19 +1,6 @@
-#!/usr/bin/env node
+#!/bin/sh
 
-import fs from "node:fs/promises";
-import esbuild from "esbuild";
-
-const entryPoints = ["src/**/*"];
-const outdir = "out";
-
-await fs.rm(outdir, { recursive: true, force: true });
-
-await esbuild.build({
-	entryPoints,
-	outdir,
-	platform: "node",
-	format: "esm",
-	bundle: false,
-	sourcemap: true,
-	logLevel: "info",
-});
+echo "rm -rf out"
+rm -rf out
+echo "swc src --copy-files -d out"
+./node_modules/.bin/swc src --strip-leading-paths --copy-files -d out
