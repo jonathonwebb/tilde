@@ -1,4 +1,3 @@
-#!/bin/sh
-
-echo "biome check --fix ."
-./node_modules/.bin/biome check --fix .
+#!/usr/bin/env bash
+set -ex
+node_modules/.bin/biome check --fix .

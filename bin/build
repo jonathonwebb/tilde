@@ -1,6 +1,3 @@
-#!/bin/sh
-
-echo "rm -rf out"
-rm -rf out
-echo "swc src --copy-files -d out"
-./node_modules/.bin/swc src --strip-leading-paths --copy-files -d out
+#!/usr/bin/env bash
+set -ex
+node_modules/.bin/swc ./app ./test --copy-files -d ./out

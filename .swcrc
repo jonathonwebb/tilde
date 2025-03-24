@@ -9,7 +9,11 @@
 		"transform": {
 			"legacyDecorator": true,
 			"decoratorMetadata": true
-		}
+		},
+		"experimental": {
+			"keepImportAttributes": true
+		},
+		"preserveAllComments": true
 	},
 	"sourceMaps": "inline"
 }

@@ -1,7 +1,4 @@
-#!/bin/sh
-
-echo "biome ci ."
-./node_modules/.bin/biome ci .
-
-echo "tsc -p tsconfig.json --noEmit"
-./node_modules/.bin/tsc -p tsconfig.json --noEmit
+#!/usr/bin/env bash
+set -ex
+node_modules/.bin/biome ci .
+node_modules/.bin/tsc -p ./tsconfig.json --noEmit
