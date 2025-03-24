@@ -1,10 +1,5 @@
-import {
-	Command,
-	CommanderError,
-	InvalidOptionArgumentError,
-	Option,
-} from "commander";
-import { type Level, levels } from "pino";
+import { Command, CommanderError, Option } from "commander";
+import type { Level } from "pino";
 import { type ServeConfig, serveCmd } from "./serve.js";
 
 type ParseOptions = {
@@ -16,6 +11,7 @@ type ParseOptions = {
 export type BaseConfig = {
 	env: string;
 	level: Level;
+	format: "json" | "pretty";
 };
 
 type ParseResult =
@@ -55,9 +51,15 @@ export function parse(
 			)
 			.addOption(
 				new Option("-l, --level <level>", "log level")
-					.argParser(parseLevelOptions)
+					.choices(["fatal", "error", "warn", "info", "debug", "trace"])
 					.default("info")
 					.env("MDW_LEVEL"),
+			)
+			.addOption(
+				new Option("-f, --format <format>", "log format")
+					.choices(["pretty", "json"])
+					.default("json")
+					.env("MDW_FORMAT"),
 			)
 			.version(
 				`tilde v${version || "(unknown)"}`,
@@ -85,6 +87,7 @@ export function parse(
 					config: {
 						env: opts["env"],
 						level: opts["level"],
+						format: opts["format"],
 						server: {
 							host: opts["host"],
 							port: opts["port"],
@@ -114,17 +117,4 @@ export function parse(
 		}
 		throw err;
 	}
-}
-function parseLevelOptions(val: string, _prev: Level): Level {
-	const lowerValue = val.toLowerCase();
-	if (!isLevel(lowerValue))
-		throw new InvalidOptionArgumentError(
-			`Allowed choices are ${Object.values(levels.labels).join(", ")}.`,
-		);
-
-	return lowerValue;
-}
-
-function isLevel(s: string): s is Level {
-	return Object.values(levels.labels).includes(s);
 }

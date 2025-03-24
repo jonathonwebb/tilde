@@ -1,4 +1,6 @@
+import fastifyView from "@fastify/view";
 import Fastify from "fastify";
+import nunjucks from "nunjucks";
 import type { BaseConfig } from "./cli.js";
 
 export type ServeConfig = BaseConfig & {
@@ -9,10 +11,29 @@ export type ServeConfig = BaseConfig & {
 };
 
 export async function serveCmd(config: ServeConfig) {
-	const app = Fastify({ logger: { level: config.level } });
+	const app = Fastify({
+		logger: {
+			level: config.level,
+			...(config.format === "pretty"
+				? {
+						transport: { target: "pino-pretty", options: { singleLine: true } },
+					}
+				: {}),
+		},
+	});
 
-	app.get("/", async (_req, _reply) => {
-		return { message: "hello, world!" };
+	await app.register(fastifyView, {
+		engine: { nunjucks },
+		production: config.env === "production",
+		defaultContext: {},
+		root: "templates",
+		options: {
+			onConfigure: (_env: nunjucks.Environment) => {},
+		},
+	});
+
+	app.get("/", async (_req, reply) => {
+		return reply.viewAsync("home.html", { message: "hello, world!" });
 	});
 
 	const { host, port } = config.server;

@@ -3,5 +3,5 @@ exports[`parse > no args 1`] = `
 `;
 
 exports[`parse > no args 2`] = `
-"usage: tilde [options] [command]\\n\\noptions:\\n  -e, --env <env>      application environment (default: \\"production\\", env:\\n                       MDW_ENV)\\n  -l, --level <level>  log level (default: \\"info\\", env: MDW_LEVEL)\\n  -V, --version        show version info and exit\\n  -h, --help           display help for command\\n\\ncommands:\\n  serve [options]\\n  help [command]       display help for command\\n"
+"usage: tilde [options] [command]\\n\\noptions:\\n  -e, --env <env>        application environment (default: \\"production\\", env:\\n                         MDW_ENV)\\n  -l, --level <level>    log level (choices: \\"fatal\\", \\"error\\", \\"warn\\", \\"info\\",\\n                         \\"debug\\", \\"trace\\", default: \\"info\\", env: MDW_LEVEL)\\n  -f, --format <format>  log format (choices: \\"pretty\\", \\"json\\", default: \\"json\\",\\n                         env: MDW_FORMAT)\\n  -V, --version          show version info and exit\\n  -h, --help             display help for command\\n\\ncommands:\\n  serve [options]\\n  help [command]         display help for command\\n"
 `;

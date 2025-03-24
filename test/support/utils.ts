@@ -18,6 +18,7 @@ export class StringWritable extends Writable {
 		callback: (error?: Error | null) => void,
 	): void {
 		if (encoding === "buffer") {
+			// biome-ignore lint/style/noParameterAssign: style
 			chunk = this._decoder.write(chunk);
 		}
 		this.data += chunk;
