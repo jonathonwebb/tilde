@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 set -ex
-node_modules/.bin/biome ci .
+node_modules/.bin/biome check ${CI:+"--reporter=github" "--max-diagnostics=none"} .
 node_modules/.bin/tsc -p ./tsconfig.json --noEmit
