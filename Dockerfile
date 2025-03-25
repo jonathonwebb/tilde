@@ -1,8 +1,9 @@
 ARG NODE_VERSION=22.14.0
 FROM node:${NODE_VERSION}-alpine AS base
 
-RUN apk add --no-cache tini
-ENTRYPOINT ["/sbin/tini", "--"]
+RUN apk add --no-cache tini && \
+		ln -s /sbin/tini /bin/tini
+ENTRYPOINT ["/bin/tini", "--"]
 
 ENV PNPM_HOME="/opt/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -26,4 +27,4 @@ RUN --mount=type=cache,id=pnpm,target=/opt/pnpm/store,sharing=locked \
 	pnpm install --prod --frozen-lockfile
 
 COPY --chown=node:node . .
-COPY --from=dev /opt/tilde/out ./out
+RUN --mount=from=dev,source=/opt/tilde/out,target=/tmp/out cp -r /tmp/out ./

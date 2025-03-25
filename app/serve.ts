@@ -36,6 +36,10 @@ export async function serveCmd(config: ServeConfig) {
 		return reply.viewAsync("home.html", { message: "hello, world!" });
 	});
 
+	app.get("/health/ready", async (_req, reply) => {
+		return reply.send({ status: "ready" });
+	});
+
 	const { host, port } = config.server;
 	await app.listen({ host, port });
 }
