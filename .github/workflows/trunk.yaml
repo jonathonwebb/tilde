@@ -47,16 +47,18 @@ jobs:
       -
         uses: docker/build-push-action@v6
         with:
+          cache-from: type=registry,ref=${{ github.repository }}:latest
+          cache-to: type=inline
           load: true
-          tags: ${{ github.repository }}:test
+          tags: ${{ github.repository }}:test-${{ github.sha }}
       -
         run: |
           docker run --rm ${{ github.repository }}:test ./bin/test
       -
         uses: docker/build-push-action@v6
         with:
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=registry,ref=${{ github.repository }}:test-${{ github.sha }}
+          cache-to: type=inline
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -83,7 +85,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       -
         id: data
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        run: |
+          echo "image_name=$(docker inspect --format='{{index .RepoDigests 0}}' ghcr.io/${{ github.repository }}:$(git rev-parse --short HEAD))" >> $GITHUB_OUTPUT
       -
         uses: dokku/github-action@v1
         if:
@@ -91,4 +94,4 @@ jobs:
           git_remote_url: 'ssh://${{ vars.DOKKU_HOST }}/${{ vars.DOKKU_APP_NAME }}'
           ssh_host_key: ${{ secrets.DOKKU_SSH_HOST_KEY }}
           ssh_private_key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
-          deploy_docker_image: ghcr.io/${{ github.repository }}:sha-${{ steps.data.outputs.sha_short }}
+          deploy_docker_image: ${{ steps.data.outputs.image_name }}
