@@ -34,7 +34,7 @@ jobs:
             ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
-            type=sha
+            type=sha,prefix=sha-,format=short
       -
         uses: actions/cache@v4
         with:
@@ -75,10 +75,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - id: data
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       -
         uses: dokku/github-action@v1
         if:
         with:
           git_remote_url: 'ssh://${{ vars.DOKKU_HOST }}/${{ vars.DOKKU_APP_NAME }}'
           ssh_private_key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
-          deploy_docker_image: ${{ github.repository }}:${{ github.sha }}
+          deploy_docker_image: ${{ github.repository }}:sha-${{ steps.data.outputs.sha_short }}
