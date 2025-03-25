@@ -30,10 +30,14 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
       -
+        id: data
+        run: |
+          echo "image_name=$(docker inspect --format='{{index .RepoDigests 0}}' ghcr.io/${{ github.repository }}:latest)" >> $GITHUB_OUTPUT
+      -
         uses: dokku/github-action@v1
         if:
         with:
           git_remote_url: 'ssh://${{ vars.DOKKU_HOST }}/${{ vars.DOKKU_APP_NAME }}'
           ssh_host_key: ${{ secrets.DOKKU_SSH_HOST_KEY }}
           ssh_private_key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
-          deploy_docker_image: ghcr.io/${{ github.repository }}:latest
+          deploy_docker_image: ${{ steps.data.outputs.image_name }}
