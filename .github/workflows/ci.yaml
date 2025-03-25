@@ -4,9 +4,6 @@ on:
   push:
     branches-ignore:
       - main
-  pull_request:
-    branches:
-      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -22,6 +19,8 @@ jobs:
         with:
           node-version: '22.14.0'
           cache: pnpm
+      - run: |
+          pnpm install --frozen-lockfile
       - run: |
           ./bin/check
           ./bin/test
