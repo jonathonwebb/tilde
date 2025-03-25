@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       confirmation:
-        description: 'Confirm production release'
+        description: 'Release image tagged ":latest" to production?'
         required: true
         type: boolean
         default: false
@@ -34,5 +34,6 @@ jobs:
         if:
         with:
           git_remote_url: 'ssh://${{ vars.DOKKU_HOST }}/${{ vars.DOKKU_APP_NAME }}'
+          ssh_host_key: ${{ secrets.DOKKU_SSH_HOST_KEY }}
           ssh_private_key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
           deploy_docker_image: ghcr.io/${{ github.repository }}:latest
