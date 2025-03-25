@@ -53,7 +53,7 @@ jobs:
           tags: ${{ github.repository }}:test-${{ github.sha }}
       -
         run: |
-          docker run --rm ${{ github.repository }}:test ./bin/test
+          docker run --rm ${{ github.repository }}:test-${{ github.sha }} ./bin/test
       -
         uses: docker/build-push-action@v6
         with:
