@@ -92,6 +92,7 @@ jobs:
         if:
         with:
           branch: main
+          git_push_flags: '--force'
           git_remote_url: 'ssh://${{ vars.DOKKU_HOST }}/${{ vars.DOKKU_APP_NAME }}'
           ssh_host_key: ${{ secrets.DOKKU_SSH_HOST_KEY }}
           ssh_private_key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
