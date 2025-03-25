@@ -32,6 +32,7 @@ jobs:
       -
         id: data
         run: |
+          docker pull ghcr.io/${{ github.repository }}:latest
           echo "image_name=$(docker inspect --format='{{index .RepoDigests 0}}' ghcr.io/${{ github.repository }}:latest)" >> $GITHUB_OUTPUT
       -
         uses: dokku/github-action@v1
