@@ -36,7 +36,7 @@ jobs:
           echo "image_name=$(docker inspect --format='{{index .RepoDigests 0}}' ghcr.io/${{ github.repository }}:latest)" >> $GITHUB_OUTPUT
       -
         uses: dokku/github-action@v1
-        if:
+        if: ${{ inputs.confirmation }}
         with:
           branch: main
           git_push_flags: '--force'
