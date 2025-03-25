@@ -37,6 +37,7 @@ jobs:
         uses: dokku/github-action@v1
         if:
         with:
+          branch: main
           git_remote_url: 'ssh://${{ vars.DOKKU_HOST }}/${{ vars.DOKKU_APP_NAME }}'
           ssh_host_key: ${{ secrets.DOKKU_SSH_HOST_KEY }}
           ssh_private_key: ${{ secrets.DOKKU_SSH_PRIVATE_KEY }}
