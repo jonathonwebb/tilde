@@ -1,7 +1,7 @@
-#!/usr/bin/env bash
+#!/bin/sh
 set -ex
 node --enable-source-maps \
-	--import ./out/test/setup.js \
+	--import ./out/test/support/setup.js \
 	"$@" \
 	--test "out/test/**/*.test.js"
 

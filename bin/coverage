@@ -1,3 +1,3 @@
-#!/usr/bin/env bash
+#!/bin/sh
 set -ex
 node_modules/.bin/c8 --all --src "out/app" --exclude "out/test/**" ./bin/test

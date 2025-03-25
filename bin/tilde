@@ -1,3 +1,2 @@
-#!/usr/bin/env -S node --enable-source-maps
-process.title = "tilde";
-import "../out/app/index.js";
+#!/bin/sh
+exec node --enable-source-maps ./out/app/index.js "$@"
