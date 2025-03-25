@@ -47,7 +47,7 @@ jobs:
       -
         uses: docker/build-push-action@v6
         with:
-          cache-from: type=registry,ref=${{ github.repository }}:latest
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:latest
           cache-to: type=inline
           load: true
           tags: ${{ github.repository }}:test-${{ github.sha }}
@@ -57,7 +57,7 @@ jobs:
       -
         uses: docker/build-push-action@v6
         with:
-          cache-from: type=registry,ref=${{ github.repository }}:test-${{ github.sha }}
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:test-${{ github.sha }}
           cache-to: type=inline
           push: true
           tags: ${{ steps.meta.outputs.tags }}
