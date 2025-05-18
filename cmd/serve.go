@@ -2,32 +2,37 @@ package cmd
 
 import (
 	"context"
-	"log/slog"
+	"flag"
 
-	"github.com/jonathonwebb/tilde/internal/cli"
-	"github.com/jonathonwebb/tilde/internal/serve"
+	"github.com/jonathonwebb/tilde/internal/serveapp"
+	"github.com/jonathonwebb/x/conf"
 )
 
-const (
-	serveUsage = `usage: tilde [root flags] serve [-h] [flags]`
-	serveHelp  = `usage: tilde [root flags] serve [-h] [flags]
+var serveCmd = conf.Command{
+	Name:  "serve",
+	Usage: `usage: tilde [root flags] serve [-h | -help] [flags]`,
+	Help: `usage: tilde [root flags] serve [-h | -help] [flags]
 
-Serve starts the application server.
+Serve starts the tilde application server.
 
 flags:
-  -h, --help   show this help and exit`
-)
-
-var serveCmd = cli.Command{
-	Name:  "serve",
-	Usage: serveUsage,
-	Help:  serveHelp,
-	Action: func(ctx context.Context, e *cli.Env) cli.ExitStatus {
-		logger := slog.New(slog.NewTextHandler(e.Stderr, &slog.HandlerOptions{Level: cfg.Level}))
-		if err := serve.NewApp(logger, cfg).Run(ctx); err != nil {
-			logger.Error(err.Error())
-			return cli.ExitFailure
+  -listen=:0   listener address
+  -dev         enable dev server
+  -h, --help   show this help and exit`,
+	Flags: func(fs *flag.FlagSet) {
+		fs.StringVar(&cfg.Serve.Addr, "listen", ":0", "")
+		fs.BoolVar(&cfg.Serve.Dev, "dev", false, "")
+	},
+	Vars: map[string]string{
+		"listen": "TLD_LISTEN",
+	},
+	Action: func(ctx context.Context, e *conf.Env) conf.ExitStatus {
+		l := cfg.NewLogger(e.Stderr)
+		l.Debug("serve", "config", cfg)
+		if err := serveapp.New(cfg, l).Run(ctx); err != nil {
+			l.Error(err.Error())
+			return conf.ExitFailure
 		}
-		return cli.ExitSuccess
+		return conf.ExitSuccess
 	},
 }

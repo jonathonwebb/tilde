@@ -26,3 +26,9 @@ go.work.sum
 
 # Binary artifacts
 bin/
+
+# NPM packages
+node_modules
+
+# Asset artifacts
+ui/static/build

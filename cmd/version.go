@@ -2,31 +2,38 @@ package cmd
 
 import (
 	"context"
+	"flag"
 	"fmt"
 
-	"github.com/jonathonwebb/tilde/internal/cli"
+	"github.com/jonathonwebb/x/conf"
 )
 
-const (
-	versionUsage = `usage: tilde [-h] version`
-	versionHelp  = `usage: tilde [-h] version
+var versionCmd = conf.Command{
+	Name:  "version",
+	Usage: `usage: tilde [-h | -help] version`,
+	Help: `usage: tilde [-h | -help] version
 
-Version prints program build information.
+Version prints information about the tilde build.
 
 flags:
-  -h, --help   show this help and exit`
-)
-
-var versionCmd = cli.Command{
-	Name:  "version",
-	Usage: versionUsage,
-	Help:  versionHelp,
-	Action: func(ctx context.Context, e *cli.Env) cli.ExitStatus {
-		if e.Build == "" {
-			fmt.Fprint(e.Stdout, "tilde (unknown build)\n")
-		} else {
-			fmt.Fprintf(e.Stdout, "tilde %s\n", e.Build)
+  -h, --help   show this help and exit`,
+	Flags: func(fs *flag.FlagSet) {},
+	Vars:  map[string]string{},
+	Action: func(ctx context.Context, e *conf.Env) conf.ExitStatus {
+		var (
+			version = "?"
+			rev     = "?"
+		)
+		if versionMeta, ok := e.Meta["version"].(string); ok && versionMeta != "" {
+			version = versionMeta
 		}
-		return cli.ExitSuccess
+		if revMeta, ok := e.Meta["revision"].(string); ok && revMeta != "" {
+			rev = revMeta
+		}
+		if len(rev) > 7 {
+			rev = rev[0:7] // shorten long hashes
+		}
+		fmt.Fprintf(e.Stdout, "tilde v%s (rev %s)\n", version, rev)
+		return conf.ExitSuccess
 	},
 }
