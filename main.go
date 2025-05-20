@@ -6,6 +6,7 @@ import (
 	"runtime/debug"
 
 	"github.com/jonathonwebb/tilde/cmd"
+	"github.com/jonathonwebb/tilde/internal/core"
 	"github.com/jonathonwebb/x/conf"
 )
 
@@ -18,7 +19,8 @@ func main() {
 		"revision": rev,
 		"time":     time,
 	})
-	os.Exit(int(cmd.CLI.Execute(context.Background(), env)))
+	var cfg core.Config
+	os.Exit(int(cmd.CLI.Execute(context.Background(), env, &cfg)))
 }
 
 func getVcsMeta() (rev string, time string) {

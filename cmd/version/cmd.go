@@ -1,14 +1,13 @@
-package cmd
+package version
 
 import (
 	"context"
-	"flag"
 	"fmt"
 
 	"github.com/jonathonwebb/x/conf"
 )
 
-var versionCmd = conf.Command{
+var Cmd = conf.Command{
 	Name:  "version",
 	Usage: `usage: tilde [-h | -help] version`,
 	Help: `usage: tilde [-h | -help] version
@@ -17,9 +16,7 @@ Version prints information about the tilde build.
 
 flags:
   -h, --help   show this help and exit`,
-	Flags: func(fs *flag.FlagSet) {},
-	Vars:  map[string]string{},
-	Action: func(ctx context.Context, e *conf.Env) conf.ExitStatus {
+	Action: func(ctx context.Context, e *conf.Env, _ any) conf.ExitStatus {
 		var (
 			version = "?"
 			rev     = "?"

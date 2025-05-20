@@ -18,13 +18,13 @@ import (
 )
 
 type App struct {
-	cfg           core.Config
+	cfg           *core.Config
 	logger        *slog.Logger
 	templateFuncs template.FuncMap
 	templateCache map[string]*template.Template
 }
 
-func New(cfg core.Config, logger *slog.Logger) *App {
+func New(cfg *core.Config, logger *slog.Logger) *App {
 	return &App{
 		cfg:           cfg,
 		logger:        logger,

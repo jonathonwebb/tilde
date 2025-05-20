@@ -15,11 +15,11 @@ import (
 )
 
 type App struct {
-	cfg    core.Config
+	cfg    *core.Config
 	logger *slog.Logger
 }
 
-func New(cfg core.Config, logger *slog.Logger) *App {
+func New(cfg *core.Config, logger *slog.Logger) *App {
 	return &App{cfg: cfg, logger: logger}
 }
 

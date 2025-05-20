@@ -4,11 +4,12 @@ import (
 	"flag"
 	"log/slog"
 
+	"github.com/jonathonwebb/tilde/cmd/assets"
+	"github.com/jonathonwebb/tilde/cmd/serve"
+	"github.com/jonathonwebb/tilde/cmd/version"
 	"github.com/jonathonwebb/tilde/internal/core"
 	"github.com/jonathonwebb/x/conf"
 )
-
-var cfg core.Config
 
 var CLI = conf.Command{
 	Name:  "tilde",
@@ -27,7 +28,8 @@ flags:
   -format=text      log format (text|json) ($TLD_FORMAT)
   -level=info       log level (debug|info|warn|error) ($TLD_LEVEL)
   -h, -help         show this help and exit`,
-	Flags: func(fs *flag.FlagSet) {
+	Flags: func(fs *flag.FlagSet, target any) {
+		cfg := target.(*core.Config)
 		fs.StringVar(&cfg.Env, "env", "production", "")
 		fs.TextVar(&cfg.Level, "level", slog.LevelInfo, "")
 		fs.TextVar(&cfg.Format, "format", &core.TextFormat, "")
@@ -37,5 +39,5 @@ flags:
 		"level":  "TLD_LEVEL",
 		"format": "TLD_FORMAT",
 	},
-	Commands: []*conf.Command{&assetsCmd, &serveCmd, &versionCmd},
+	Commands: []*conf.Command{&assets.Cmd, &serve.Cmd, &version.Cmd},
 }
