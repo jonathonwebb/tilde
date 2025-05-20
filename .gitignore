@@ -32,3 +32,8 @@ node_modules
 
 # Asset artifacts
 ui/static/build
+
+# Sqlite databases
+*.sqlite
+*.sqlite3
+*.db

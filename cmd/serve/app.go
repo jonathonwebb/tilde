@@ -18,6 +18,7 @@ type application struct {
 
 func run(ctx context.Context, w io.Writer, cfg core.Config) error {
 	log := cfg.NewLogger(w)
+	log.Debug("serve", "cfg", cfg)
 
 	drivers, err := drivers()
 	if err != nil {

@@ -15,6 +15,12 @@ type Config struct {
 		Addr string
 		Dev  bool
 	}
+	DB struct {
+		URI           string
+		Schema        string
+		MigrationName string
+		Migrate       bool
+	}
 }
 
 func (c Config) handlerOpts() *slog.HandlerOptions {

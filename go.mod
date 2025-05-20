@@ -6,6 +6,8 @@ require github.com/jonathonwebb/x v0.0.0-20250519025918-61a234324801
 
 require (
 	github.com/99designs/gqlgen v0.17.73 // indirect
+	github.com/lib/pq v1.10.9 // indirect
+	github.com/mattn/go-sqlite3 v1.14.28 // indirect
 	github.com/vektah/gqlparser/v2 v2.5.27 // indirect
 	golang.org/x/net v0.40.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
@@ -14,6 +16,7 @@ require (
 
 require (
 	github.com/agnivade/levenshtein v1.2.1 // indirect
+	github.com/amacneil/dbmate/v2 v2.27.0
 	github.com/cpuguy83/go-md2man/v2 v2.0.7 // indirect
 	github.com/evanw/esbuild v0.25.4
 	github.com/google/uuid v1.6.0 // indirect
