@@ -37,7 +37,7 @@ flags:
 		fs.StringVar(&cfg.Env, "env", "production", "")
 		fs.TextVar(&cfg.Level, "level", slog.LevelInfo, "")
 		fs.TextVar(&cfg.Format, "format", &core.TextFormat, "")
-		fs.StringVar(&cfg.DB.URI, "db", "sqlite:data.db", "")
+		fs.StringVar(&cfg.DB.URI, "db", "data.db", "")
 	},
 	Vars: map[string]string{
 		"env":         "TLD_ENV",

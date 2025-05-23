@@ -5,6 +5,7 @@ import (
 	"io"
 	"log/slog"
 	"strings"
+	"time"
 )
 
 type Config struct {
@@ -16,10 +17,10 @@ type Config struct {
 		Dev  bool
 	}
 	DB struct {
-		URI           string
-		Schema        string
-		MigrationName string
-		Migrate       bool
+		URI            string
+		Schema         string
+		MigrateTo      string
+		MigrateTimeout time.Duration
 	}
 }
 

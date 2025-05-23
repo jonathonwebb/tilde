@@ -2,6 +2,7 @@ package serve
 
 import (
 	"context"
+	"database/sql"
 	"html/template"
 	"io"
 	"log/slog"
@@ -9,6 +10,7 @@ import (
 	"path/filepath"
 
 	"github.com/jonathonwebb/tilde/internal/core"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type application struct {
@@ -31,6 +33,16 @@ func run(ctx context.Context, w io.Writer, cfg core.Config) error {
 		return err
 	}
 	log.Info("templates", "templates", templates)
+
+	db, err := sql.Open("sqlite3", cfg.DB.URI)
+	if err != nil {
+		return err
+	}
+	if err := db.PingContext(ctx); err != nil {
+		log.Error(err.Error())
+		return err
+	}
+	defer db.Close()
 
 	app := &application{
 		log:       log,

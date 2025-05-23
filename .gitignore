@@ -37,3 +37,4 @@ ui/static/build
 *.sqlite
 *.sqlite3
 *.db
+*.sqbpro

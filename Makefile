@@ -1,2 +1,2 @@
 build:
-	go build -o bin/tilde .
+	CGO_ENABLED=1 go build -o bin/tilde .
