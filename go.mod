@@ -10,8 +10,8 @@ require (
 )
 
 require (
-	github.com/evanw/esbuild v0.25.5 // indirect
-	github.com/google/go-cmp v0.7.0 // indirect
+	github.com/evanw/esbuild v0.25.5
+	github.com/google/go-cmp v0.7.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/r3labs/sse/v2 v2.10.0
 	golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect

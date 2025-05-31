@@ -1,4 +1,5 @@
 bin/
+tmp/
 ui/static/build
 node_modules
 .idea/
