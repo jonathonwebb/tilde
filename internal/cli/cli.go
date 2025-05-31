@@ -74,7 +74,7 @@ func (c *Command) error(env *Env, err error) ExitStatus {
 		fmt.Fprintf(env.Stdout, "%s\n", c.Help)
 		return ExitSuccess
 	}
-	if errors.Is(err, ErrUnknownCommand) {
+	if errors.Is(err, ErrUnknownCommand) { //nolint:gocritic
 		fmt.Fprintf(env.Stderr, "unknown command %s\n", env.Args[0])
 	} else if errors.Is(err, ErrMissingCommand) {
 		fmt.Fprintf(env.Stderr, "missing command\n")
