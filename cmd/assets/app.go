@@ -11,7 +11,6 @@ import (
 	"path"
 	"path/filepath"
 
-	
 	esbuild "github.com/evanw/esbuild/pkg/api"
 	"github.com/jonathonwebb/tilde/internal/core"
 )
@@ -121,7 +120,10 @@ func run(ctx context.Context, w io.Writer, cfg *core.Config) (err error) {
 		return err
 	}
 
-	if err := os.WriteFile("ui/static/build/meta.json", metaJson, 0644); err != nil {
+	if err := os.MkdirAll(path.Join(cfg.StaticDir, "build"), 0755); err != nil {
+		return err
+	}
+	if err := os.WriteFile(path.Join(cfg.StaticDir, "build/meta.json"), metaJson, 0644); err != nil {
 		return err
 	}
 	return nil
