@@ -24,8 +24,6 @@ type Config struct {
 
 	// migrate
 	DbSchemaVersion SchemaVersion
-	DbSchemaFile    string
-	DbSchemaWrite   bool
 	DbMigrateSkip   bool
 }
 

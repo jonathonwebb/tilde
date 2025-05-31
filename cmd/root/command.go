@@ -40,8 +40,8 @@ flags:
 		fs.StringVar(&cfg.AssetsDir, "assets", "ui/assets", "")
 		fs.StringVar(&cfg.DbConnString, "db", "data.db", "")
 		fs.StringVar(&cfg.Env, "env", "production", "")
-		fs.TextVar(&cfg.Level, "level", slog.LevelInfo, "")
 		fs.TextVar(&cfg.Format, "format", &core.TextFormat, "")
+		fs.TextVar(&cfg.Level, "level", slog.LevelInfo, "")
 		fs.StringVar(&cfg.StaticDir, "public", "ui/static", "")
 	},
 	Vars: map[string]string{

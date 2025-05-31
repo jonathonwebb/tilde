@@ -21,6 +21,7 @@ func run(ctx context.Context, w io.Writer, cfg *core.Config) (err error) {
 		}
 	}()
 
+	log.Debug("connecting to db", "path", cfg.DbConnString)
 	db, err := sql.Open("sqlite3", cfg.DbConnString)
 	if err != nil {
 		return err
@@ -35,7 +36,6 @@ func run(ctx context.Context, w io.Writer, cfg *core.Config) (err error) {
 		Log:     log,
 		Sources: migrations.All,
 	}
-	// return m.Init(ctx)
 
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
