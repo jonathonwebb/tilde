@@ -10,6 +10,7 @@ import (
 	esbuild "github.com/evanw/esbuild/pkg/api"
 	"github.com/gorilla/websocket"
 	"github.com/r3labs/sse/v2"
+	"golang.org/x/sync/errgroup"
 )
 
 var upgrader = websocket.Upgrader{
@@ -35,7 +36,7 @@ type ChangeEvent struct {
 	Updated []string `json:"updated"`
 }
 
-func NewServer(logger *slog.Logger) *Server {
+func NewServer(logger *slog.Logger) (*Server, error) {
 	s := Server{
 		logger:     logger,
 		clients:    make(map[*websocket.Conn]bool),
@@ -45,7 +46,7 @@ func NewServer(logger *slog.Logger) *Server {
 	}
 	go s.run()
 
-	ctx, ctxErr := esbuild.Context(esbuild.BuildOptions{
+	builder, builderErr := esbuild.Context(esbuild.BuildOptions{
 		EntryPoints: []string{
 			"ui/assets/entrypoints/**/*.js",
 			"ui/assets/entrypoints/**/*.jsx",
@@ -61,18 +62,18 @@ func NewServer(logger *slog.Logger) *Server {
 		JSXFactory:  "h",
 		JSXFragment: "Fragment",
 	})
-	if ctxErr != nil {
-		logger.Error(ctxErr.Error())
+	if builderErr != nil {
+		logger.Error(builderErr.Error())
 		// TODO: handle error
 	}
 
-	watchErr := ctx.Watch(esbuild.WatchOptions{})
+	watchErr := builder.Watch(esbuild.WatchOptions{})
 	if watchErr != nil {
 		logger.Error(watchErr.Error())
 		// TODO: handle error
 	}
 
-	serveResult, serveErr := ctx.Serve(esbuild.ServeOptions{
+	serveResult, serveErr := builder.Serve(esbuild.ServeOptions{
 		Servedir: "ui/static",
 		CORS:     esbuild.CORSOptions{Origin: []string{"*"}},
 	})
@@ -90,44 +91,38 @@ func NewServer(logger *slog.Logger) *Server {
 	processPaths := func(paths []string, result *[]string) {
 		for _, path := range paths {
 			if !strings.HasSuffix(path, ".map") {
-				// newPath, err := url.JoinPath("/", path)
-				// if err == nil {
 				*result = append(*result, path)
-				// } else {
-				// 	logger.Warn("invalid path")
-				// }
-				// newPath, err := url.JoinPath("/build", path)
-				// if err == nil {
-				// 	*result = append(*result, newPath)
-				// } else {
-				// 	logger.Warn("invalid path")
-				// }
 			}
 		}
 	}
 
-	go sseClient.Subscribe("change", func(msg *sse.Event) {
-		var ce ChangeEvent
+	g := new(errgroup.Group)
+	g.Go(func() error {
+		return sseClient.Subscribe("change", func(msg *sse.Event) {
+			var ce ChangeEvent
+			added := []string{}
+			removed := []string{}
+			updated := []string{}
 
-		added := []string{}
-		removed := []string{}
-		updated := []string{}
-
-		if len(msg.Data) > 0 {
-			err := json.Unmarshal(msg.Data, &ce)
-			if err == nil {
-				processPaths(ce.Added, &added)
-				processPaths(ce.Removed, &removed)
-				processPaths(ce.Updated, &updated)
-				newCe, err := json.Marshal(ChangeEvent{Added: added, Removed: removed, Updated: updated})
+			if len(msg.Data) > 0 {
+				err := json.Unmarshal(msg.Data, &ce)
 				if err == nil {
-					s.Broadcast(newCe)
+					processPaths(ce.Added, &added)
+					processPaths(ce.Removed, &removed)
+					processPaths(ce.Updated, &updated)
+					newCe, err := json.Marshal(ChangeEvent{Added: added, Removed: removed, Updated: updated})
+					if err == nil {
+						s.Broadcast(newCe)
+					}
 				}
 			}
-		}
+		})
 	})
+	if err := g.Wait(); err != nil {
+		return nil, err
+	}
 
-	return &s
+	return &s, nil
 }
 
 func (s *Server) run() {
@@ -145,7 +140,7 @@ func (s *Server) run() {
 				err := client.WriteMessage(websocket.TextMessage, msg)
 				if err != nil {
 					s.logger.Error(err.Error())
-					client.Close()
+					_ = client.Close()
 					delete(s.clients, client)
 				}
 			}
@@ -162,7 +157,9 @@ func (s *Server) Upgrade(w http.ResponseWriter, r *http.Request) error {
 
 	defer func() {
 		s.unregister <- conn
-		conn.Close()
+		if err := conn.Close(); err != nil {
+			s.logger.Error(fmt.Sprintf("error closing connection: %v", err))
+		}
 	}()
 
 	s.register <- conn

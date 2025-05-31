@@ -6,7 +6,7 @@ build:
 	CGO_ENABLED=1 go build -o ./bin/tilde ./cmd
 
 .PHONY: check
-check: deps-check fmt-check vet cover-check
+check: deps-check fmt-check lint
 
 .PHONY: deps
 deps:
@@ -24,6 +24,10 @@ fmt:
 .PHONY: fmt-check
 fmt-check:
 	test -z "$(shell gofmt -l .)"
+
+.PHONY: lint
+lint:
+	golangci-lint run
 
 .PHONY: vet
 	go vet ./...

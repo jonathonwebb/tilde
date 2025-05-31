@@ -77,22 +77,24 @@ var All = []schema.Migration{
 `))
 )
 
-func NewMigration(ctx context.Context, dir, migrationName string, ts time.Time) error {
+func NewMigration(ctx context.Context, dir, migrationName string, ts time.Time) (err error) {
 	id := ts.Unix()
 	label := fmt.Sprintf("%010d_%s", id, migrationName)
 
 	p := path.Join(dir, fmt.Sprintf("%s.go", label))
-	f, err := os.Create(p)
+	f1, err := os.Create(p)
 	if err != nil {
 		return err
 	}
+	defer func() {
+		err = errors.Join(err, f1.Close())
+	}()
 
-	err = migrationTmpl.Execute(f, struct {
+	err = migrationTmpl.Execute(f1, struct {
 		Id    string
 		IdNum int64
 		Name  string
 	}{fmt.Sprintf("%010d", id), id, migrationName})
-	f.Close()
 	if err != nil {
 		return err
 	}
@@ -114,13 +116,15 @@ func NewMigration(ctx context.Context, dir, migrationName string, ts time.Time) 
 	}
 
 	p = path.Join(dir, "all.go")
-	f, err = os.Create(p)
+	f2, err := os.Create(p)
 	if err != nil {
 		return err
 	}
+	defer func() {
+		err = errors.Join(err, f2.Close())
+	}()
 
-	err = allTmpl.Execute(f, all)
-	f.Close()
+	err = allTmpl.Execute(f2, all)
 	if err != nil {
 		return err
 	}
@@ -239,7 +243,7 @@ const (
 )`,
 ))
 
-func (m *Migrator) Dump(ctx context.Context, dir string, w io.Writer) error {
+func (m *Migrator) Dump(ctx context.Context, dir string, w io.Writer) (err error) {
 	remote, err := m.Store.state(ctx)
 	if err != nil {
 		return fmt.Errorf("get store state: %v", err)
@@ -249,7 +253,9 @@ func (m *Migrator) Dump(ctx context.Context, dir string, w io.Writer) error {
 	var b strings.Builder
 	if len(remote) > 0 {
 		latest = remote[len(remote)-1]
-		m.Store.dump(ctx, &b)
+		if err := m.Store.dump(ctx, &b); err != nil {
+			return err
+		}
 	}
 
 	p := path.Join(dir, "schema.go")
@@ -257,7 +263,7 @@ func (m *Migrator) Dump(ctx context.Context, dir string, w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func() { err = errors.Join(f.Close()) }()
 
 	return schemaTmpl.Execute(f, struct {
 		SchemaVersion int64

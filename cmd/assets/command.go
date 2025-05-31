@@ -2,7 +2,6 @@ package assets
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/jonathonwebb/tilde/internal/cli"
 	"github.com/jonathonwebb/tilde/internal/core"
@@ -25,8 +24,7 @@ var Cmd = cli.Command{
 	Action: func(ctx context.Context, e *cli.Env, target any) cli.ExitStatus {
 		cfg := target.(*core.Config)
 		if len(e.Args) != 0 {
-			fmt.Fprintf(e.Stderr, "expected 0 args, but got %d\n", len(e.Args))
-			fmt.Fprintf(e.Stderr, "%s\n", usage)
+			e.PrintUsageErr(usage, "expected 0 args, but got %d", len(e.Args))
 			return cli.ExitUsageError
 		}
 		if err := run(ctx, e.Stderr, cfg); err != nil {

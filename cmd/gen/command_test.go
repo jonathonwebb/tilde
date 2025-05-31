@@ -1,6 +1,7 @@
 package gen_test
 
 import (
+	"log"
 	"log/slog"
 	"strings"
 	"testing"
@@ -43,6 +44,7 @@ func setUp(t testing.TB, args ...string) (*cli.Env, *core.Config, *strings.Build
 	var errBuf, outBuf strings.Builder
 
 	return &cli.Env{
+			Log:    log.New(&errBuf, "", 0),
 			Stderr: &errBuf,
 			Stdout: &outBuf,
 			Args:   append([]string{"assets"}, args...),

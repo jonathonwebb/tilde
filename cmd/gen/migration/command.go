@@ -2,7 +2,6 @@ package migration
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/jonathonwebb/tilde/internal/cli"
@@ -26,14 +25,13 @@ var Cmd = cli.Command{
 	Action: func(ctx context.Context, e *cli.Env, target any) cli.ExitStatus {
 		args := e.Args
 		if len(args) != 1 {
-			fmt.Fprintf(e.Stderr, "expected 1 <name> arg, got %d\n", len(args))
-			fmt.Fprintf(e.Stderr, "%s\n", usage)
+			e.PrintUsageErr(usage, "expected 1 <name> arg, got %d", len(args))
 			return cli.ExitUsageError
 		}
 
 		ts := time.Now().UTC()
 		if err := schema.NewMigration(ctx, "internal/migrations", args[0], ts); err != nil {
-			fmt.Fprintf(e.Stderr, "failed to generate migration: %v", err)
+			e.PrintFailure("generate error: %v", err)
 			return cli.ExitFailure
 		}
 		return cli.ExitSuccess

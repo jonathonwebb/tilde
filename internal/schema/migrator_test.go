@@ -18,7 +18,10 @@ func TestGenerate(t *testing.T) {
 		name := "one"
 		ts := time.Unix(0, 0)
 
-		schema.NewMigration(t.Context(), dir, name, ts)
+		err := schema.NewMigration(t.Context(), dir, name, ts)
+		if err != nil {
+			t.Error(err)
+		}
 
 		want := `package migrations
 
@@ -74,7 +77,9 @@ var All = []schema.Migration{
 		name := "two"
 		ts := time.Unix(1748577600, 0)
 
-		schema.NewMigration(t.Context(), dir, name, ts)
+		if err := schema.NewMigration(t.Context(), dir, name, ts); err != nil {
+			t.Error(err)
+		}
 
 		want := `package migrations
 

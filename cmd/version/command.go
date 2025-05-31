@@ -2,7 +2,6 @@ package version
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/jonathonwebb/tilde/internal/cli"
 )
@@ -16,7 +15,7 @@ Version prints information about the app build.
 
 flags:
   -h, -help   show this help and exit`,
-	Action: func(ctx context.Context, e *cli.Env, _ any) cli.ExitStatus {
+	Action: func(ctx context.Context, e *cli.Env, target any) cli.ExitStatus {
 		var (
 			version = "?"
 			rev     = "?"
@@ -30,7 +29,7 @@ flags:
 		if len(rev) > 7 {
 			rev = rev[0:7] // shorten long hashes
 		}
-		fmt.Fprintf(e.Stdout, "tilde v%s (rev %s)\n", version, rev)
+		e.Log.Printf("tilde v%s (rev %s)\n", version, rev)
 		return cli.ExitSuccess
 	},
 }

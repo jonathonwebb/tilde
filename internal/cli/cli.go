@@ -6,11 +6,13 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"strings"
 )
 
 type Env struct {
+	Log            *log.Logger
 	Stderr, Stdout io.Writer
 	Args           []string
 	Vars           map[string]string
@@ -26,12 +28,24 @@ func DefaultEnv(meta map[string]any) *Env {
 		}
 	}
 	return &Env{
+		Log:    log.New(os.Stderr, "", 0),
 		Stderr: os.Stderr,
 		Stdout: os.Stdout,
 		Args:   os.Args,
 		Vars:   env,
 		Meta:   meta,
 	}
+}
+
+//nolint:errcheck
+func (e *Env) PrintUsageErr(usage, format string, a ...any) {
+	fmt.Fprintf(e.Stderr, "%s\n", fmt.Sprintf(format, a...))
+	fmt.Fprintf(e.Stderr, "%s\n", usage)
+}
+
+//nolint:errcheck
+func (e *Env) PrintFailure(format string, a ...any) {
+	fmt.Fprintf(e.Stderr, "%s\n", fmt.Sprintf(format, a...))
 }
 
 type ExitStatus int
@@ -69,19 +83,22 @@ func (c *Command) initFlagSet() {
 	c.flags.SetOutput(io.Discard)
 }
 
-func (c *Command) error(env *Env, err error) ExitStatus {
+//nolint:errcheck,gocritic
+func (c *Command) error(e *Env, err error) ExitStatus {
 	if errors.Is(err, flag.ErrHelp) {
-		fmt.Fprintf(env.Stdout, "%s\n", c.Help)
+		fmt.Fprintf(e.Stdout, "%s\n", c.Help)
 		return ExitSuccess
 	}
-	if errors.Is(err, ErrUnknownCommand) { //nolint:gocritic
-		fmt.Fprintf(env.Stderr, "unknown command %s\n", env.Args[0])
+
+	if errors.Is(err, ErrUnknownCommand) {
+		fmt.Fprintf(e.Stderr, "unknown command %s\n", e.Args[0])
 	} else if errors.Is(err, ErrMissingCommand) {
-		fmt.Fprintf(env.Stderr, "missing command\n")
+		fmt.Fprintf(e.Stderr, "missing command\n")
 	} else {
-		fmt.Fprintf(env.Stderr, "%v\n", err)
+		fmt.Fprintf(e.Stderr, "%v\n", err)
 	}
-	fmt.Fprintf(env.Stderr, "%s\n", c.Usage)
+	fmt.Fprintf(e.Stderr, "%s\n", c.Usage)
+
 	return ExitUsageError
 }
 

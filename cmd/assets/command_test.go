@@ -1,6 +1,7 @@
 package assets_test
 
 import (
+	"log"
 	"log/slog"
 	"os"
 	"path"
@@ -130,6 +131,7 @@ func setUp(t testing.TB, args ...string) (*cli.Env, *core.Config, *strings.Build
 	var errBuf, outBuf strings.Builder
 
 	return &cli.Env{
+			Log:    log.New(&errBuf, "", 0),
 			Stderr: &errBuf,
 			Stdout: &outBuf,
 			Args:   append([]string{"assets"}, args...),

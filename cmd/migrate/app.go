@@ -26,9 +26,7 @@ func run(ctx context.Context, w io.Writer, cfg *core.Config) (err error) {
 		return err
 	}
 	defer func() {
-		if closeErr := db.Close(); closeErr != nil {
-			err = errors.Join(err, closeErr)
-		}
+		err = errors.Join(err, db.Close())
 	}()
 
 	store := schema.NewSqlite3SchemaStore(db, log)

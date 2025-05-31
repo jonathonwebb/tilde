@@ -32,7 +32,10 @@ type application struct {
 func (app *application) handlers() http.Handler {
 	m := http.NewServeMux()
 	m.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("hello, world!"))
+		_, err := w.Write([]byte("hello, world!"))
+		if err != nil {
+			w.WriteHeader(500)
+		}
 	})
 	return m
 }

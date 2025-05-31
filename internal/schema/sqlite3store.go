@@ -78,14 +78,12 @@ func (s *Sqlite3SchemaStore) release(ctx context.Context) error {
 	return nil
 }
 
-func (s *Sqlite3SchemaStore) state(ctx context.Context) ([]int64, error) {
+func (s *Sqlite3SchemaStore) state(ctx context.Context) (ids []int64, err error) {
 	rows, err := s.db().QueryContext(ctx, `SELECT version_id FROM schema_migrations`)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	var ids []int64
+	defer func() { err = errors.Join(rows.Close()) }()
 
 	for rows.Next() {
 		var vid int64
@@ -129,13 +127,13 @@ func (s *Sqlite3SchemaStore) revert(ctx context.Context, id int64) error {
 	return nil
 }
 
-func (s *Sqlite3SchemaStore) dump(ctx context.Context, w io.Writer) error {
+func (s *Sqlite3SchemaStore) dump(ctx context.Context, w io.Writer) (err error) {
 	var stmts []string
 	rows, err := s.db().QueryContext(ctx, "SELECT sql FROM sqlite_schema")
 	if err != nil {
 		return err
 	}
-	defer rows.Close()
+	defer func() { err = errors.Join(rows.Close()) }()
 
 	for rows.Next() {
 		var stmt sql.NullString
@@ -173,13 +171,13 @@ func (s *Sqlite3SchemaStore) close() error {
 	return s.instance.Close()
 }
 
-func (s *Sqlite3SchemaStore) withTx(ctx context.Context, fn func(context.Context, *sql.Tx) error) error {
+func (s *Sqlite3SchemaStore) withTx(ctx context.Context, fn func(context.Context, *sql.Tx) error) (err error) {
 	tx, err := s.db().BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
 	defer func() {
-		tx.Rollback()
+		err = errors.Join(err, tx.Rollback())
 	}()
 
 	err = fn(ctx, tx)
