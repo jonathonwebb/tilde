@@ -3,6 +3,7 @@ package migrate
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"io"
 	"strings"
 	"time"
@@ -24,7 +25,11 @@ func run(ctx context.Context, w io.Writer, cfg *core.Config) (err error) {
 	if err != nil {
 		return err
 	}
-	defer db.Close()
+	defer func() {
+		if closeErr := db.Close(); closeErr != nil {
+			err = errors.Join(err, closeErr)
+		}
+	}()
 
 	store := schema.NewSqlite3SchemaStore(db, log)
 	m := &schema.Migrator{
