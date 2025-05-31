@@ -1,5 +1,5 @@
 import { h, render } from "preact";
-import App, {type AppProps} from "../App";
+import App, {type AppProps} from "../App"
 
 const root = document.getElementById("app");
 if (!root) {

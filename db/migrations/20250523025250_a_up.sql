@@ -1,9 +1,0 @@
--- 20250523025250_a
-
--- up
-CREATE TABLE IF NOT EXISTS users (
-	 id INTEGER PRIMARY KEY AUTOINCREMENT
-	,username TEXT NOT NULL
-);
-
--- down
